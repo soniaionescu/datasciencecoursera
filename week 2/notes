@@ -1,0 +1,218 @@
+	• Control structures
+		○ Introduction
+			§ Control structures allow you to control the flow of execution of the program, depending on runtime conditions
+			§ Most control structures are not used in interactive sessions, but rather when writing functions or longer expressions
+				□ For command-line interactive work, the *apply functions are more useful
+		○ If-else
+			§ Structure
+				If(condition)
+					Do something
+				Else if (condition) #optional
+					Do something
+				Else (condition) #optional, must be at end
+					Do something
+			§ Can say y <- if else construct
+				□ Example
+					Y <- if(x > 3){
+						10
+					}
+					Else {
+						0
+					}
+				□ Helpful because you can see that the entire construct is about assigning a value to y
+		○ For loops
+			§ Take an iterator variable and assign it successive values from a sequence or vector, most commonly used for iterating over the elements of an object (list, vector, etc)
+			§ Examples that do the same thing
+				X <- c("a", "b", "c", "d")
+				For(I in 1:4){
+					Print(x[i])
+				}
+				For(I in seq_along(x)){ # generate sequence based on x
+					Print(x[i])
+				}
+				For(letter in x){ #taking from vector itself
+					Print(letter)
+				}
+				For(I in 1:4) print (x[i]) #for a single expression, can omit the curly braces
+			§ Can have nested for loops
+				□ Often useful for matrices
+				□ Example
+					X <- matrix(1:6, 2, 3)
+					For(I in seq_len(nrow(x))){
+						For(j in seq_len(ncol(x))){
+							Print(x[I, j])
+						}
+					}
+		○ While loops
+			§ While loops begin by testing a condition
+			§ If it is true, then they execute the loop body
+			§ Once the loop body is executed, the condition is tested again and so forth
+			§ Can potentially result in infinite loops if not written properly
+			§ Example
+				Count <- 0
+				While (count < 10)
+					Print(count)
+					Count <- count +1
+			§ Can test multiple conditions, evaluated from left to right
+				Z <- 5
+				While( z >= 3 && z <=10){
+					Print(z)
+					Coin <- rbinom(1, 1, .5)
+					If(count == 1){ #random walk
+						Z <- z+1
+					}
+					Else {
+						Z <- z -1
+					}
+				}
+		○ Repeat, next, break
+			§ Repeat initiates an infinite loop; these are not commonly used in statistical applications
+			§ The only way to exit a repeat loop is to call break
+				X0 <- 1
+				Tol <- 1e-8
+				Repeat{
+					X1 <- computeEstimate()
+					If(abs(x1-x0) < tol){
+						Break
+					}
+					Else {
+						X0 <- x1
+					}
+				}
+				□ No guarantee that it will stop
+					® Better to set a hard limit on the number of iterations and then report whether convergence was achieved or not
+			§ Next is used to skip an iteration of a loop
+				For(I in 1:100){
+					If(I <= 20){
+						Next
+					}
+					#Do something here
+				}
+			§ Return signals that a function should exit and return a given value
+	• Your first R function
+		○ Can write in command line, but usually want to do in separate text file/or can make a package
+		○ Create a new R script
+		○ Example
+			Add2 <- function(x, y){
+				X+y
+			}
+			§ In R, returns whatever the last expression was, so in this case it will return x +y
+		○ Example
+			Above10 <- function(x, n=10){ #specify n
+				Use <- x > n
+				X[use]
+			}
+		○ Example
+			columnmean <- function(y, removeNA = TRU){
+				nc <- ncol(y)
+				means <- numeric(nc)
+				for(I in 1:nc){
+					means[i] <- mean(y[, i], na.rm = removeNA)
+				}
+				means
+			}
+	• Functions
+		○ Part 1
+			§ Function are created using the function() directive and are stored as R objects of class function
+				□ They are first class objects, which means that they can be treated much like any other R object
+					® Can be passed as arguments to other functions
+					® Can be nested, so that you can define a function inside of another function
+						◊ The return value of a function is the last expression in the function value to be evaluated
+			§ Functions have named arguments which potentially have default values
+				□ The formal arguments are the arguments included in the function definition
+				□ The formals function returns a list of all the formal arguments of a function
+				□ Not every function call in R makes use of all the formal arguments
+				□ Function arguments can be missing or might have default values
+			§ R functions arguments can be matched positionally or by name
+		○ Part 2
+			§ Defining a function
+				□ In addition to not specifying a default value, you can also set an argument value to NULL
+			§ The … argument indicate a variable number of arguments that are usually passed on to other functions
+				□ Often used when extending another function and you don't want to copy the entire argument list of the original function
+					Myplot <- function(x, y, type = "1", …){
+						Plot(x, y, type = type, …)
+					}
+				□ Generic functions use … so that extra arguments can be passed to methods
+				□ Any arguments that appear after … on the argument list must be named explicitly can cannot be partially matched
+	• Scoping rules
+		○ Symbol binding
+			§ How does R know which value to assign to which symbol?
+				□ When R tries to bind a value to a symbol, it searches through a series of environments to find the appropriate value
+				□ When you are working on the command line and need to retrieve the value of an R object, the order is roughly
+					® Search the global environment for a symbol name matching the one requested
+					® Search the namespaces of each of the packages on the search list
+						◊ The search list can be found by using the search function
+				□ The global environment or the user's workspace is always the first element of the search list and the base package is always the last
+					® The order of the packages on the search list matters
+				□ Users can configure which packages get loaded on startup so you cannot assume that there will be a set list of packages available
+				□ When a user loads a package with library the namespace of that package gets put in position 2 of the search list and everything else gets shifted down the list
+				□ Note that R has separate namespaces for functions and non-functions
+					® It's possible to have an object named c and a function named c
+			§ Scoping rules
+				□ Essentially what makes R different from S
+				□ Determine how a value is associated with a free variable in a function
+				□ Uses lexical/static scoping, rather than dynamic scoping
+					® Simplifies statistical computation
+				□ Example
+					F <- function(x, y){
+						X^2 + y /z
+					}
+					® Z is called a free variable, as it is not a formal argument and it is not a local variable (assigned inside the function body)
+						◊ The values of a free variable are searched for in the environment in which the function was defined
+							} An environment is a collection of (symbol, value) pairs
+							} Every environment has a parent environment, and it is possible for an environment to have multiple "children"
+							} The only environment without a parent is the empty environment
+							} A function + an environment = closure/function closure
+						◊ Searching for the value of a free variable:
+							} If the value of a symbol is not found in the environment in which a function was defined, then the search is continued in the parent environment
+							} The search continues down the sequence of parent environments until we hit the top-level environment, this is usually to workspace/global environment or the namespace of a package
+							} After the top-level environment, the search continues down the search list until we hit the empty environment. If a value for a given symbol cannot be found once the empty environment is arrived at, then an error is thrown.
+		○ Scoping rules
+			§ Typically, a function is defined in the global environment, so that the values of free variables are just found in the users workspace
+				□ Often the right thing to do 
+			§ In R, you can have functions defined inside other functions
+				□ In this case the environment in which a function is defined is the body of another function
+					® Example
+					make.power <- function(n){
+						pow <- function(x){
+							X^n
+						}
+						pow
+					} #returns another function as its value
+			§ Exploring a function closure
+				□ What's in a function's environment?
+					® Call ls and get on variables
+			§ Consequences of lexical scoping
+				□ In R, all objects must be stored in memory
+				□ All functions must carry a pointer to their respective defining environments, which could be anywhere
+				□ In S-PLUS, free variables are always looked up in the global workspace, so everything can be stored on the disk because the defining environment of all functions is the same
+		○ Optimization
+			§ Optimization routines in R like optim, nlm, and optimize require you to pass a function whose argument is a vector of parameters (eg a log-likelihood)
+			§ However, an object function might depend on a host of other things besides its parameters (like data)
+			§ When writing software which does optimization, it may be desirable to allow the user to hold certain parameters fixed
+	• Coding standards
+		○ Make code readable
+			§ Always use text files/text editor
+				□ Can be read by anything
+			§ Indent your code
+			§ Limit width of code
+			§ Limit length of function
+				□ Split into separate functions
+				□ Helps with knowing where a bug occurs
+	• Dates and times
+		○ Dates are represented by the Date class
+			§ Can be coerced from a character string using the as.Date() function
+			§ Strptime function in case dates are written in a different fromat
+		○ Times are represented by the POSIXct or the POSIXlt class
+			§ Ct stores time as a very large integer
+			§ Lt stores time as a list with info such as day of the week, year, month, day of the month
+			§ Times can be coerced from a character string using the as.POSIXlt or as.POSIXct function
+		○ Dates are stored internally as the number of days since 1970-01-01
+		○ Times are stored internally as the number of seconds since 1970-01-01
+		○ Generic functions that work on dates and times
+			§ Weekdays
+				□ Give day of the week
+			§ Months
+				□ Give month name
+			§ Quarters
+				□ Give quarter number
