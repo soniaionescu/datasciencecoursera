@@ -1,0 +1,194 @@
+	• Overview and history of R
+		○ Based off S
+			§ Language initiated as an internal statistical analysis environment
+				□ Rewritten in C and began to resemble the system we have today
+			§ S philosophy
+				□ Enter the language in an interactive environment
+		○ Developed, using GNU general public license to make free software
+			§ Has public mailing lists
+		○ Features
+			§ Lean
+				□ Modular packages
+			§ Graphics capabilities are sophisticated and better than most stat packages
+			§ Useful for interactive work, but contains powerful programming language
+			§ Free
+				□ Software
+					® Run program for any purpose
+					® Study how the program works and adapt to your needs
+						◊ Access to source code
+					® Freedom to redistribute copes
+					® Freedome to improve the program and release improvements to the public
+			§ Drawbacks
+				□ Old tech
+				□ Objects must be stored in physical memory
+			§ Design
+				□ Base R system you download from CRAN
+				□ Many packages that have been developed by users and programmers
+	• R console input and evaluation
+		○ Entering input
+			§ At the R prompt we type expressions
+				□ <- is the assignment operator, which assigns a value
+					® X <- 1
+					® Print(x)
+						◊ Will print 1
+					® X
+						◊ Will print 1
+			§ # indicates a comment
+		○ When a complete expression is entered at the prompt, it is evaluated and the result of the evaluated expression is returned
+			§ The result may be auto-printed
+			§ [1] indicates that x is a vector and 5 is the first element
+		○ Printing
+			§ : is used to create integer sequences
+				□ 1:20 prints the 1-20th elements
+	• Data types - R objects and attributes
+		○ 5 basic classes of objects
+			§ Character
+			§ Numeric
+			§ Integer
+			§ Complex
+			§ Logical
+				□ True/false
+		○ Most basic object is a vector
+			§ Can only contain objects of the same class
+			§ The one exception is a list, which is represented as a vector but can contain objects of different classes
+			§ Empty vectors can be created with the vector() function
+		○ Numbers
+			§ Generally treated as numeric objects
+				□ If you want an integer, need to specify the L suffix
+					® 1 gives numberic object, 1L gives integer
+			§ Inf represents infinity
+			§ NaN represents an undefined value
+		○ R objects can have attributes
+			§ Names, dimnames, dimenstions, class, length, user-defined attributes/metadata
+			§ Can be accessed using the attributes() function
+	• Data types - vectors and lists
+		○ Creating vectors
+			§ The c() function can be used to create vectors of objects
+			§ Vector()
+				□ X <- vector("numeric", length = 10)
+				□ X
+				□ [1] 0 0 0 0 0 0 0  0 0 0 
+		○ Mixing objects
+			§ When different objects are mixed in a vector, coercion occurs so that every element in the vector is of the same class
+				□ Explicit coercion
+					® As,* functions, if available
+					® Nonsensical coercion results in Nas
+		○ Lists are a special type of vector that can contain elements of different classes
+			§ X <- list(1, "a")
+			§ Have double brackets around them
+	• R data types - matrices
+		○ Matrices are vectors with a dimension attribute
+			§ The dimension attribute is itself an integer vector of length 2 (nrow, ncol)
+				□ M <- matrix(nrow = 2, ncol = 3)
+				□ M
+						◊ Gets constructed column-wise
+			§ Can be created directly from vectors by adding a dimension attribute
+			§ Cbind-ing and rbind-ing
+				□ Can be column-bound or rown-bound using cbind() and rbind()
+	• Data types - factors
+		○ Used to represent categorical data
+		○ Can be unordered or ordered
+		○ Can think of them as an integer vector where each integer has a label
+		○ Treated specially by modelling functions like lm() and glm()
+		○ Using factors with labels is better than using integers because factors are self-describing: male and female is better than 1 and 2. 
+			§ Table(X) = print table with frequencies
+			§ Unclass(x) = treat as integers
+		○ The order of the levels can be set using the levels argument to factor()
+			§ Can be important in linear modelling because the first level is used as the baseline level
+	• Data types - missing values
+		○ Missing values are denoted by na or NaN for undefined mathematical operations
+		○ Is.na() and is.nan() is used to test for Na/Nan
+		○ Na values have classes (so there are integer Nas, character Nas, etc)
+		○ An NaN value is also Na but the converse is not true
+	• Data types - data frames
+		○ Used to sore tabular data
+			§ Represented as a special type of list where every element of the list has to have the same length
+			§ Each element of the list can be thought of as a column and the length of each element is the number of rows
+			§ Unlike matrices, data frames can store different classes of objects in each column; matrices must have every element be the same class
+			§ Data frames also have a special attribute called row.names
+			§ Data frames are usually created by calling read.table() or read.csv()
+			§ Can be converted to a matrix by calling data.matrix()
+	• Data types - names attribute
+		○ R objects can have names, which is very useful for writing readable code and self-describing object
+		○ Lists can also have names, as can matrices
+	• Reading tabular data
+			§ Read.table and read.csv read data in text files, and return data frames
+				□ Arguments of read.table
+					® File
+					® Header, logical indicating if the file has a header line
+					® Sep, a string indicating how the columns are separated
+					® colClasses, a character vector indicating the class of each column in the dataset
+					® Nrows, the number of rows in the data set
+					® Comment.char, a character string indicating the comment character
+					® Skip, the number of lines to skip from the beginning
+					® stringsAsFactors, should character variables be coded as factors?
+				□ For small to moderately sized datasets, you can usually call read.table without specifying any other arguments 
+				□ Reading large datasets
+					® Read the help page for read.table, which contains many hints
+					® Make a rough calculation of the memory required to store your dataset
+					® Set comment.char = " " if there are no commented lines in your file
+					® Use the colClasses argument
+						◊ Can make read.table run much faster
+						◊ Can use the class function to be told which columns are which classes
+					® Set nrows
+						◊ Helps with memory usage
+			§ readLines reads lines of a text file
+			§ Source reads R code files
+			§ dGet reads R code files that have been dParsed
+			§ Load, for reading in saved workspaces
+			§ Unserialize, for reading single R objects in binary form
+		○ Writing data
+			§ Write.table
+			§ WriteLines
+			§ Dump
+			§ dPut
+			§ Save
+			§ Serialize
+	• Textual data formats
+		○ Features
+			§ Dumping and dputing are useful because the resulting textual format is edit-able, and in the case of corruption, potentially recoverable
+			§ Unlike writing out a table or csv file, dump and dput preserve the metadata so that the user doesn't have to specify it all over again
+			§ Textual formats can work much better with version control programs like subversion or git which can only track changes meaningfully in text files
+			§ Textual formats can be longer-lived; if there is corruption somewhere in the file, it can be easier to fix the problem
+			§ Textual formats adhere to the unix philosophy
+			§ Not very space-efficient
+		○ Dput
+			§ Another way to pass data around is by deparsing the r object with dput and reading it back using dget
+		○ Dumping
+			§ Multiple objects can be deparsed using the dump function and read back in using source
+	• Connections: interfaces to the outside world
+		○ Data are read in using connection interfaces. Connections can be made to files or to more exotic things
+			§ File (file), gzfile, bzfile, url (webpage)
+				□ File arguments
+					® Description is the name of the file
+					® Open is a code indicating
+						◊ R, read only; w, writing; a, appending; rb, wb, ab, reading writing or appending in bindary mode
+		○ Let you navigate files or other external objects
+			§ Reading lines of a text file
+			§ writeLines takes a character vector and writes each element one line at a time to a text file
+			§ readLines can be useful for reading in lines of webpages
+	• Subsetting
+		○ There are a number of operators that can be used to extract subsets of R objects
+			§ [ always returns an object of the same class as the original; can be used to select more than one element
+			§ [[ is used to extract elements of a list or a data frame; it can only be used to extract a single element and the class of the returned object will not necessarily be a list or data frame
+			§ $ is used to extract elements of a list or data frame by name
+		○ Subsetting lists
+				□ [ gives list
+				□ [[ gives just element
+					® Can be used with computed indeces
+				□ $ with the name gives the element
+					® Can only be used with literal names
+			§ Subsetting nested elements of a list
+				□ The [[ can take an integer sequence
+				□ 
+		○ Subsetting matrices
+			§ Matrices can be subsetted in the usual way with (I, j) type indices
+			§ By defauly, when a single element of a matrix is retrieved, it is returned as a vector of length 1 rather than a 1x1 matrix
+				□ This behavior can be turned off by setting drop = FALSE
+			§ Subsetting a single column or a single row will give you a vector, not a matrix
+		○ Partial matching
+			§ Partial matching of names is allowed with [[ and $
+	• Removing missing values
+		○ A common task is to remove missing values (Nas)
+			§ What if there are multiple things and you want to take the subset with no missing values
+
